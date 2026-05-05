@@ -96,15 +96,4 @@
     }
   });
 
-  // Filter behavior
-  document.querySelectorAll('.chip[data-domain]').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.chip[data-domain]').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const d = chip.dataset.domain;
-      const filtered = d === 'all' ? initiatives : initiatives.filter(i => i.domain === d);
-      cBubble.data = buildBubble(filtered);
-      cBubble.update();
-    });
-  });
 })();
