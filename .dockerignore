@@ -1,0 +1,5 @@
+.claude
+.git
+.DS_Store
+*.md
+node_modules

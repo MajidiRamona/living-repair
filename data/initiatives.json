@@ -1,0 +1,50 @@
+{
+  "initiatives": [
+    {
+      "id": "histoires-sans-chute",
+      "name": "Histoires Sans Chute",
+      "slug": "histoires-sans-chute",
+      "city": "Geneva",
+      "country": "Switzerland",
+      "lat": 46.2044,
+      "lng": 6.1432,
+      "domain": "oral-traditions",
+      "tagline": "Oral storytelling as living memory.",
+      "description": "Geneva-based collective recording and re-circulating intergenerational stories. Treats oral heritage as a renewable resource: zero-material-footprint cultural transmission that strengthens social cohesion.",
+      "founded": 2019,
+      "people_reached": 4200,
+      "stories_archived": 312,
+      "co2_saved_t": 0,
+      "materials_diverted_kg": 0,
+      "social_cohesion_score": 84,
+      "sdg_alignment": [4, 10, 11, 16],
+      "ich_domain": "Oral traditions and expressions",
+      "climate_link": "Reduces reliance on energy-intensive media production; preserves low-carbon knowledge-transfer practices.",
+      "website": "https://histoiresanschute.ch",
+      "featured": true
+    },
+    {
+      "id": "amak-bro",
+      "name": "Amak-bro",
+      "slug": "amak-bro",
+      "city": "Geneva",
+      "country": "Switzerland",
+      "lat": 46.2018,
+      "lng": 6.1466,
+      "domain": "craftsmanship",
+      "tagline": "Repair and re-craft as cultural practice.",
+      "description": "Geneva collective practising traditional repair, reuse, and re-craft. Diverts textiles and household objects from landfill while transmitting hand-skill knowledge across generations.",
+      "founded": 2021,
+      "people_reached": 1800,
+      "items_repaired": 940,
+      "co2_saved_t": 12.4,
+      "materials_diverted_kg": 1620,
+      "social_cohesion_score": 78,
+      "sdg_alignment": [11, 12, 13],
+      "ich_domain": "Traditional craftsmanship",
+      "climate_link": "Each repaired garment avoids ~3.2 kg CO2e versus replacement; preserves slow-craft knowledge.",
+      "website": "https://amakbro.ch",
+      "featured": true
+    }
+  ]
+}

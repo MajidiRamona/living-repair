@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Living Repair</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <a href="/" class="brand"><span class="dot"></span>Living Repair</a>
+    <ul>
+      <li><a href="/dashboard.html">Dashboard</a></li>
+      <li><a href="/map.html">Map</a></li>
+      <li><a href="/initiatives.html">Initiatives</a></li>
+      <li><a href="/about.html">COP 31</a></li>
+      <li><a href="/about-us.html">About</a></li>
+      <li><a href="/submit.html">Submit</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" style="padding: 60px 0 40px;">
+  <div class="container">
+    <div class="eyebrow">Dashboard · 2026 snapshot</div>
+    <h1 style="font-size: clamp(2rem, 4vw, 3.4rem);">The data behind the practice.</h1>
+    <p class="lede">
+      How intangible heritage maps onto climate, the Sustainable Development Goals, and material repair impact.
+      Filter to see the parts of the picture you need.
+    </p>
+  </div>
+</header>
+
+<section class="section" style="padding: 56px 0;">
+  <div class="container">
+
+    <div class="stat-grid" style="margin-bottom: 56px;">
+      <div class="stat"><div class="num"><span id="m-items" class="accent">—</span></div><div class="lbl">Items repaired across tracked initiatives</div></div>
+      <div class="stat"><div class="num"><span id="m-co2" class="accent">—</span>t</div><div class="lbl">CO₂e avoided through repair & re-craft</div></div>
+      <div class="stat"><div class="num"><span id="m-mat" class="accent">—</span>kg</div><div class="lbl">Materials diverted from landfill</div></div>
+      <div class="stat"><div class="num"><span id="m-people" class="accent">—</span></div><div class="lbl">People engaged across initiatives</div></div>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Filter by domain</span>
+      <button class="chip active" data-domain="all">All</button>
+      <button class="chip" data-domain="oral-traditions">Oral Traditions</button>
+      <button class="chip" data-domain="performing-arts">Performing Arts</button>
+      <button class="chip" data-domain="social-practices">Social Practices</button>
+      <button class="chip" data-domain="knowledge-of-nature">Nature & Universe</button>
+      <button class="chip" data-domain="craftsmanship">Craftsmanship</button>
+      <button class="chip" data-domain="food">Foodways</button>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">SDG coverage across living heritage</div>
+        <div class="chart-sub">Number of UNESCO-listed elements addressing each Sustainable Development Goal</div>
+        <canvas id="chart-sdg" height="320"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Repair impact by initiative</div>
+        <div class="chart-sub">CO₂e avoided (t) versus people reached — bubble size = items repaired</div>
+        <canvas id="chart-bubble" height="320"></canvas>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" style="padding: 80px 0; background: var(--ink); color: var(--bg); border: none;">
+  <div class="container">
+    <div style="font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.55; margin-bottom: 24px;">The single statistic that matters</div>
+    <div style="font-family: 'Fraunces', serif; font-size: clamp(3rem, 8vw, 7rem); line-height: 1; letter-spacing: -0.03em; max-width: 22ch; font-weight: 500;">
+      Climate-action heritage inscriptions grew from <span style="color: var(--accent);">four</span> in 2010 to <span style="color: var(--accent);">eighty-one</span> in 2024.
+    </div>
+    <div style="margin-top: 40px; max-width: 60ch; opacity: 0.75; font-size: 1rem; line-height: 1.6;">
+      That is not a forecast or a target. It is the count of UNESCO Convention inscriptions that explicitly cite climate adaptation or mitigation as their reason for being. The institution caught up to the planet faster than the policy frameworks built to fix it.
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="row">
+      <div style="font-family: 'Fraunces', serif; font-size: 1.4rem;">Living Repair</div>
+      <div class="small">Methodology: UNESCO ICH lists + community-submitted impact metrics. Numbers may be updated as data improves.</div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/data.js"></script>
+<script src="/js/dashboard.js"></script>
+
+</body>
+</html>

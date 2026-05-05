@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Initiatives — Living Repair</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="container">
+    <a href="/" class="brand"><span class="dot"></span>Living Repair</a>
+    <ul>
+      <li><a href="/dashboard.html">Dashboard</a></li>
+      <li><a href="/map.html">Map</a></li>
+      <li><a href="/initiatives.html">Initiatives</a></li>
+      <li><a href="/about.html">COP 31</a></li>
+      <li><a href="/about-us.html">About</a></li>
+      <li><a href="/submit.html">Submit</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" style="padding: 60px 0 40px;">
+  <div class="container">
+    <div class="eyebrow">Initiatives · 2 currently tracked</div>
+    <h1 style="font-size: clamp(2rem, 4vw, 3.4rem);">Practices already doing the work.</h1>
+    <p class="lede">Two Geneva-based collectives — an oral-memory project and a repair workshop — quietly doing climate-relevant cultural work.</p>
+  </div>
+</header>
+
+<section class="section" style="padding: 40px 0;">
+  <div class="container">
+    <div class="filter-bar">
+      <span class="filter-label">Filter</span>
+      <button class="chip active" data-domain="all">All domains</button>
+      <button class="chip" data-domain="oral-traditions">Oral Traditions</button>
+      <button class="chip" data-domain="performing-arts">Performing Arts</button>
+      <button class="chip" data-domain="social-practices">Social Practices</button>
+      <button class="chip" data-domain="knowledge-of-nature">Nature & Universe</button>
+      <button class="chip" data-domain="craftsmanship">Craftsmanship</button>
+      <button class="chip" data-domain="food">Foodways</button>
+    </div>
+
+    <div class="card-grid" id="initiatives-grid"></div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="row">
+      <div style="font-family: 'Fraunces', serif; font-size: 1.4rem;">Living Repair</div>
+      <div class="small">Know an initiative we should track? <a href="/submit.html">Submit it →</a></div>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/data.js"></script>
+<script>
+(async () => {
+  const initiatives = await DataStore.initiatives();
+  const grid = document.getElementById('initiatives-grid');
+
+  function render(list) {
+    grid.innerHTML = list.map(i => `
+      <a class="card" href="/initiative.html?id=${i.id}">
+        <span class="tag" style="border-color:${DOMAIN_COLORS[i.domain]}; color:${DOMAIN_COLORS[i.domain]}">${DOMAIN_LABELS[i.domain]}</span>
+        <h3>${i.name}</h3>
+        <p>${i.tagline}</p>
+        <div class="meta"><span>${i.city}, ${i.country}</span><span>${fmtNum(i.people_reached)} people</span></div>
+      </a>
+    `).join('');
+  }
+
+  render(initiatives);
+
+  document.querySelectorAll('.chip[data-domain]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip[data-domain]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const d = chip.dataset.domain;
+      render(d === 'all' ? initiatives : initiatives.filter(i => i.domain === d));
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
