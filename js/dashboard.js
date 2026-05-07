@@ -1,9 +1,8 @@
 (async () => {
-  const metrics = await DataStore.metrics();
+  const { repair_impact: ri } = await DataStore.metrics();
   const initiatives = await DataStore.initiatives();
 
   // KPIs
-  const ri = metrics.repair_impact;
   document.getElementById('m-items').textContent = fmtNum(ri.items_repaired_total);
   document.getElementById('m-co2').textContent = ri.co2_avoided_t_total.toFixed(1);
   document.getElementById('m-mat').textContent = fmtNum(ri.materials_diverted_kg_total);
@@ -17,36 +16,9 @@
   const ink = '#1a1a1a';
   const accent = '#c5572f';
   const accent2 = '#2f6b5e';
-  const accent3 = '#d4a017';
 
 
-  // 3. SDG coverage (bar)
-  const sdg = metrics.sdg_coverage;
-  const cSdg = new Chart(document.getElementById('chart-sdg'), {
-    type: 'bar',
-    data: {
-      labels: sdg.map(s => `SDG ${s.sdg} · ${s.label}`),
-      datasets: [{
-        label: 'Elements addressing this SDG',
-        data: sdg.map(s => s.elements),
-        backgroundColor: sdg.map(s => s.sdg === 13 ? accent : (s.sdg === 11 || s.sdg === 12 ? accent3 : accent2)),
-        borderColor: ink,
-        borderWidth: 1,
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { beginAtZero: true, grid: { color: '#1a1a1a11' } },
-        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-      }
-    }
-  });
-
-  // 4. Bubble: CO2 vs people reached
+  // Bubble: CO2 vs people reached
   function buildBubble(filtered) {
     return {
       datasets: filtered.map(i => ({
