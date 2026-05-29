@@ -28,13 +28,23 @@
 <header class="hero" style="padding: 60px 0 40px;">
   <div class="container">
     <div class="eyebrow">Initiatives · 2 currently tracked</div>
-    <h1 style="font-size: clamp(2rem, 4vw, 3.4rem);">Practices already doing the work.</h1>
-    <p class="lede">Two Geneva-based collectives — an oral-memory project and a repair workshop — quietly doing climate-relevant cultural work.</p>
+    <h1 style="font-size: clamp(2rem, 4vw, 3.4rem);">Repair practices in the field.</h1>
+    <p class="lede">Collectives and workshops making repair visible — across textiles, furniture, electronics, and more.</p>
   </div>
 </header>
 
 <section class="section" style="padding: 40px 0;">
   <div class="container">
+
+    <div class="filter-bar">
+      <span class="filter-label">Sector</span>
+      <button class="chip active" data-sector="all">All</button>
+      <button class="chip" data-sector="textile">Textile</button>
+      <button class="chip" data-sector="furniture">Furniture</button>
+      <button class="chip" data-sector="electronics">Electronics</button>
+      <button class="chip" data-sector="other">Other</button>
+    </div>
+
     <div class="card-grid" id="initiatives-grid"></div>
   </div>
 </section>
@@ -43,21 +53,27 @@
   <div class="container">
     <div class="row">
       <div style="font-family: 'Fraunces', serif; font-size: 1.4rem;">Living Repair</div>
-      <div class="small">Know an initiative we should track? <a href="/submit.html">Submit it →</a></div>
+      <div class="small">Know a repair initiative we should track? <a href="/submit.html">Submit it →</a></div>
     </div>
   </div>
 </footer>
 
 <script src="/js/data.js"></script>
 <script>
+const SECTOR_LABELS = { textile: 'Textile', furniture: 'Furniture', electronics: 'Electronics', other: 'Other' };
+
 (async () => {
   const initiatives = await DataStore.initiatives();
   const grid = document.getElementById('initiatives-grid');
 
   function render(list) {
+    if (!list.length) {
+      grid.innerHTML = '<p style="color:var(--ink-2); padding: 24px 0;">No initiatives in this sector yet. <a href="/submit.html">Recommend one →</a></p>';
+      return;
+    }
     grid.innerHTML = list.map(i => `
       <a class="card" href="/initiative.html?id=${i.id}">
-        <span class="tag" style="border-color:${DOMAIN_COLORS[i.domain]}; color:${DOMAIN_COLORS[i.domain]}">${DOMAIN_LABELS[i.domain]}</span>
+        <span class="tag">${SECTOR_LABELS[i.repair_sector] || 'Other'}</span>
         <h3>${i.name}</h3>
         <p>${i.tagline}</p>
         <div class="meta"><span>${i.city}, ${i.country}</span><span>${fmtNum(i.people_reached)} people</span></div>
@@ -66,6 +82,15 @@
   }
 
   render(initiatives);
+
+  document.querySelectorAll('.chip[data-sector]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip[data-sector]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const s = chip.dataset.sector;
+      render(s === 'all' ? initiatives : initiatives.filter(i => i.repair_sector === s));
+    });
+  });
 })();
 </script>
 

@@ -64,12 +64,8 @@
         </div>
         <aside>
           <div class="chart-card">
-            <div class="chart-title">UNESCO ICH domain</div>
-            <div class="chart-sub" id="p-ich-domain" style="margin-bottom: 0; font-family: 'Fraunces', serif; font-size: 1rem; color: var(--ink);"></div>
-          </div>
-          <div class="chart-card" style="margin-top: 16px;">
-            <div class="chart-title">SDG alignment</div>
-            <div id="p-sdg" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;"></div>
+            <div class="chart-title">Keywords</div>
+            <div id="p-keywords" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;"></div>
           </div>
           <div class="chart-card" style="margin-top: 16px;" id="p-website-card">
             <div class="chart-title">External</div>
@@ -117,7 +113,6 @@
   document.getElementById('p-founded').textContent = i.founded < 1900 ? `~${i.founded}` : i.founded;
   document.getElementById('p-description').textContent = i.description;
   document.getElementById('p-climate').textContent = i.climate_link;
-  document.getElementById('p-ich-domain').textContent = i.ich_domain;
 
   // KV grid - choose meaningful metrics
   const kvs = [];
@@ -142,10 +137,10 @@
     </div>
   `).join('');
 
-  // SDG badges
-  const sdgEl = document.getElementById('p-sdg');
-  sdgEl.innerHTML = (i.sdg_alignment || []).map(n => `
-    <span style="display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:var(--ink); color:var(--bg); font-size:0.78rem; font-weight:600;">${n}</span>
+  // Keywords
+  const kwEl = document.getElementById('p-keywords');
+  kwEl.innerHTML = (i.keywords || []).map(k => `
+    <span style="display:inline-block; padding: 4px 10px; border: 1px solid var(--ink); font-size: 0.78rem; letter-spacing: 0.06em;">${k}</span>
   `).join('');
 
   // Website
