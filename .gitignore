@@ -2,3 +2,11 @@
 .DS_Store
 node_modules/
 *.log
+.next/
+out/
+*.sqlite
+*.sqlite-journal
+tsconfig.tsbuildinfo
+.env
+.env.local
+/uploads/

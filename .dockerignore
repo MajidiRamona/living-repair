@@ -3,3 +3,10 @@
 .DS_Store
 *.md
 node_modules
+.next
+out
+*.sqlite
+*.sqlite-journal
+.env
+.env.local
+uploads
