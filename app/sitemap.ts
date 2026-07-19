@@ -2,6 +2,11 @@ import type { MetadataRoute } from 'next';
 import { getPublishedInitiatives } from '@/lib/initiatives';
 import { SITE_URL } from '@/lib/siteUrl';
 
+// Must be dynamic: this queries the database, which doesn't exist yet at Docker build time
+// (the volume is only mounted at container runtime) — prerendering this at build fails.
+// It also means the sitemap always reflects currently published initiatives, which is what we want.
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const initiatives = await getPublishedInitiatives();
 
