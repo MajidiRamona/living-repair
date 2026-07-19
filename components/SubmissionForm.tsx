@@ -74,6 +74,25 @@ const INITIAL: FormState = {
   honeypot: '',
 };
 
+// The API returns { error: string } for simple failures, or { error: <zod flatten() shape> }
+// for validation failures — { formErrors: string[], fieldErrors: Record<string, string[]> }.
+// Surface whichever it is instead of always falling back to a generic message.
+function extractErrorMessage(data: unknown, status: number): string {
+  if (data && typeof data === 'object' && 'error' in data) {
+    const err = (data as { error: unknown }).error;
+    if (typeof err === 'string') return err;
+    if (err && typeof err === 'object') {
+      const { formErrors, fieldErrors } = err as { formErrors?: string[]; fieldErrors?: Record<string, string[]> };
+      const parts: string[] = [...(formErrors ?? [])];
+      for (const [field, messages] of Object.entries(fieldErrors ?? {})) {
+        if (messages?.length) parts.push(`${field}: ${messages[0]}`);
+      }
+      if (parts.length) return parts.join(' · ');
+    }
+  }
+  return `Something went wrong (${status}) — please check the form and try again.`;
+}
+
 export default function SubmissionForm() {
   const [form, setForm] = useState<FormState>(INITIAL);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -118,11 +137,9 @@ export default function SubmissionForm() {
         setPhoto(null);
         formRef.current?.reset();
       } else {
-        const data = await res.json().catch(() => ({}));
+        const data = await res.json().catch(() => null);
         setStatus('err');
-        setErrorMessage(
-          typeof data?.error === 'string' ? data.error : 'Something went wrong — please check the form and try again.',
-        );
+        setErrorMessage(extractErrorMessage(data, res.status));
       }
     } catch {
       setStatus('err');
