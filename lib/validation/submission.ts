@@ -19,6 +19,16 @@ export const PublicationConsent = z.enum(['YES', 'YES_EXCEPT_CHALLENGES', 'NO'])
 
 const emptyToUndefined = (v: unknown) => (v === '' ? undefined : v);
 
+const MAX_WORDS = 800;
+
+// Character max() alone doesn't cap word count meaningfully — a word-count refine matches the
+// "aim for 300-500 words" guidance shown in the form and stops anyone pasting in an essay.
+function maxWords<T extends z.ZodString>(schema: T, max = MAX_WORDS) {
+  return schema.refine((v) => v.trim().split(/\s+/).filter(Boolean).length <= max, {
+    message: `Must be ${max} words or fewer`,
+  });
+}
+
 // Plain z.string().url() accepts any scheme, including javascript: — which we later render
 // straight into an <a href>. Restrict to http(s) so a submission can never smuggle a script URI.
 const httpUrl = z
@@ -41,7 +51,7 @@ export const submissionSchema = z
     // 1. Basic information — name is optional, not everyone has a formal entity name
     name: z.preprocess(emptyToUndefined, z.string().trim().min(2).max(200).optional()),
     tagline: z.string().trim().min(1).max(120),
-    description: z.string().trim().min(50).max(4000),
+    description: maxWords(z.string().trim().min(50).max(6000)),
 
     // 2. Activities
     activities: z.array(Activity).min(1),
@@ -56,16 +66,16 @@ export const submissionSchema = z
     orgTypesOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
 
     // 5. People
-    peopleInvolved: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
+    peopleInvolved: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
 
     // 6. Knowledge and skills
-    knowledgeSkills: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
+    knowledgeSkills: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
 
     // 7. Why do you care about repair / heritage transmission
-    heritageDimension: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
+    heritageDimension: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
 
     // 8. Challenges and threats
-    challengesAndThreats: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
+    challengesAndThreats: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
 
     // 9. Current needs
     needs: z.array(Need).default([]),
@@ -144,7 +154,7 @@ export const initiativePatchSchema = z
   .object({
     name: z.string().trim().min(2).max(200),
     tagline: z.string().trim().min(1).max(120),
-    description: z.string().trim().min(1).max(4000),
+    description: maxWords(z.string().trim().min(1).max(6000)),
     city: z.string().trim().min(1).max(120),
     region: z.string().max(120).nullable(),
     street: z.string().max(200).nullable(),
@@ -157,10 +167,10 @@ export const initiativePatchSchema = z
     orgTypes: z.array(OrgType),
     activities: z.array(Activity),
     audience: z.array(Audience),
-    peopleInvolved: z.string().max(2000).nullable(),
-    knowledgeSkills: z.string().max(2000).nullable(),
-    heritageDimension: z.string().max(2000).nullable(),
-    challengesAndThreats: z.string().max(2000).nullable(),
+    peopleInvolved: maxWords(z.string().max(6000)).nullable(),
+    knowledgeSkills: maxWords(z.string().max(6000)).nullable(),
+    heritageDimension: maxWords(z.string().max(6000)).nullable(),
+    challengesAndThreats: maxWords(z.string().max(6000)).nullable(),
     challengesPublic: z.boolean(),
     needs: z.array(Need),
     founded: z.coerce.number().int().nullable(),

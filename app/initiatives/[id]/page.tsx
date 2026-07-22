@@ -97,14 +97,12 @@ export default async function InitiativeProfilePage({ params }: { params: Promis
 
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 56, marginTop: 40 }}>
             <div className="prose">
-              {i.photo_url && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={i.photo_url}
-                  alt={i.name}
-                  style={{ width: '100%', border: '1px solid var(--ink)', marginBottom: 32 }}
-                />
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={i.photo_url || '/initiative-placeholder.svg'}
+                alt={i.name}
+                style={{ width: '100%', border: '1px solid var(--ink)', marginBottom: 32 }}
+              />
 
               <h3 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.2rem', marginBottom: 12 }}>About</h3>
               <p>{i.description}</p>

@@ -22,6 +22,8 @@ export default function MapClient({ initiatives }: { initiatives: PublicInitiati
       }).addTo(map);
       mapInstance.current = map;
 
+      const positions: [number, number][] = [];
+
       initiatives.forEach((i) => {
         const color = DOMAIN_COLORS[i.domain] || '#1a1a1a';
         const icon = L.divIcon({
@@ -37,7 +39,14 @@ export default function MapClient({ initiatives }: { initiatives: PublicInitiati
           <div style="margin-bottom:8px;">${i.tagline}</div>
           <a href="/initiatives/${i.id}">Open profile →</a>
         `);
+        positions.push([i.lat, i.lng]);
       });
+
+      // A fixed world view leaves closely-clustered markers (e.g. everything in one city)
+      // looking like nothing is there at all. Zoom to fit the actual data instead.
+      if (positions.length > 0) {
+        map.fitBounds(L.latLngBounds(positions), { padding: [50, 50], maxZoom: 13 });
+      }
     })();
 
     return () => {

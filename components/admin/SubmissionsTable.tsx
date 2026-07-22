@@ -21,13 +21,18 @@ export default function SubmissionsTable({ submissions }: { submissions: Row[] }
 
   return (
     <>
-      <div className="filter-bar">
-        <span className="filter-label">Status</span>
-        {FILTERS.map((f) => (
-          <button key={f} className={`chip ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
-            {f}
-          </button>
-        ))}
+      <div className="filter-bar" style={{ justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <span className="filter-label">Status</span>
+          {FILTERS.map((f) => (
+            <button key={f} className={`chip ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+              {f}
+            </button>
+          ))}
+        </div>
+        <a href="/api/admin/submissions/export" className="chip" download>
+          Download CSV ↓
+        </a>
       </div>
 
       {list.length === 0 ? (

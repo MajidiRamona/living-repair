@@ -112,8 +112,13 @@ export default function SubmissionForm() {
     });
   }
 
-  const descriptionWordCount = form.description.trim() ? form.description.trim().split(/\s+/).length : 0;
-  const knowledgeWordCount = form.knowledgeSkills.trim() ? form.knowledgeSkills.trim().split(/\s+/).length : 0;
+  const countWords = (text: string) => (text.trim() ? text.trim().split(/\s+/).length : 0);
+  const MAX_WORDS = 800;
+  const descriptionWordCount = countWords(form.description);
+  const knowledgeWordCount = countWords(form.knowledgeSkills);
+  const peopleWordCount = countWords(form.peopleInvolved);
+  const heritageWordCount = countWords(form.heritageDimension);
+  const challengesWordCount = countWords(form.challengesAndThreats);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -198,7 +203,7 @@ export default function SubmissionForm() {
             onChange={(e) => set('description', e.target.value)}
             style={{ minHeight: 180 }}
           />
-          <div className="hint">{descriptionWordCount} words — aim for 300–500</div>
+          <div className="hint">{descriptionWordCount} words — aim for 300–500 (max {MAX_WORDS})</div>
         </div>
       </div>
 
@@ -278,6 +283,7 @@ export default function SubmissionForm() {
         <div className="field">
           <label htmlFor="peopleInvolved">Describe the people involved and their roles (staff, volunteers, craftspeople, students, community members...)</label>
           <textarea id="peopleInvolved" value={form.peopleInvolved} onChange={(e) => set('peopleInvolved', e.target.value)} />
+          <div className="hint">{peopleWordCount} words (max {MAX_WORDS})</div>
         </div>
       </div>
 
@@ -286,7 +292,7 @@ export default function SubmissionForm() {
         <div className="field">
           <label htmlFor="knowledgeSkills">What knowledge, techniques, or skills are practiced, transmitted, or developed?</label>
           <textarea id="knowledgeSkills" value={form.knowledgeSkills} onChange={(e) => set('knowledgeSkills', e.target.value)} />
-          <div className="hint">{knowledgeWordCount} words — aim for 300–500</div>
+          <div className="hint">{knowledgeWordCount} words — aim for 300–500 (max {MAX_WORDS})</div>
         </div>
       </div>
 
@@ -297,6 +303,7 @@ export default function SubmissionForm() {
             Why do you care about repair, and would you like repair knowledge to be transmitted through generations? Why?
           </label>
           <textarea id="heritageDimension" value={form.heritageDimension} onChange={(e) => set('heritageDimension', e.target.value)} />
+          <div className="hint">{heritageWordCount} words (max {MAX_WORDS})</div>
         </div>
       </div>
 
@@ -309,6 +316,7 @@ export default function SubmissionForm() {
             value={form.challengesAndThreats}
             onChange={(e) => set('challengesAndThreats', e.target.value)}
           />
+          <div className="hint">{challengesWordCount} words (max {MAX_WORDS})</div>
         </div>
       </div>
 
