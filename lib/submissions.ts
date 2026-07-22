@@ -32,7 +32,7 @@ export async function deleteSubmission(id: string): Promise<void> {
   await prisma.submission.delete({ where: { id } });
 }
 
-const REQUIRED_TO_PUBLISH = ['name', 'tagline', 'description', 'city', 'country'] as const;
+const REQUIRED_TO_PUBLISH = ['tagline', 'description', 'city', 'country'] as const;
 
 export class ApprovalValidationError extends Error {
   constructor(public fields: string[]) {
@@ -40,9 +40,22 @@ export class ApprovalValidationError extends Error {
   }
 }
 
+// Thrown when a submitter's publication consent forbids approval outright (consent = NO).
+// This must be enforced here, not just hidden in the admin UI, so it can't be bypassed by
+// calling the API directly.
+export class ConsentDeclinedError extends Error {
+  constructor() {
+    super('This submitter did not consent to publication — it can only be stored, not approved.');
+  }
+}
+
 export async function approveSubmission(id: string, input: ApproveInput) {
   const submission = await prisma.submission.findUnique({ where: { id } });
   if (!submission) throw new Error('Submission not found');
+
+  if (submission.publicationConsent === 'NO') {
+    throw new ConsentDeclinedError();
+  }
 
   const lat = input.lat ?? submission.lat ?? undefined;
   const lng = input.lng ?? submission.lng ?? undefined;
@@ -53,12 +66,11 @@ export async function approveSubmission(id: string, input: ApproveInput) {
   if (lat === undefined || lng === undefined) missing.push('lat/lng');
   if (missing.length) throw new ApprovalValidationError(missing);
 
-  // Visibility consent rule: admin can only make a section MORE private than requested, never less.
-  const challengesPublic = input.visibility.challengesPublic && submission.challengesPublicRequested;
-  const needsPublic = input.visibility.needsPublic && submission.needsPublicRequested;
-  const emailPublic = input.visibility.emailPublic; // always defaults false unless admin opts in
+  // Consent ceiling: admin's challengesPublic choice is only ever honored when the submitter
+  // gave full consent (YES). YES_EXCEPT_CHALLENGES and NO both force it false — no override.
+  const challengesPublic = submission.publicationConsent === 'YES' && input.challengesPublic;
 
-  const baseSlug = slugify(input.slug || submission.name);
+  const baseSlug = slugify(input.slug || input.name);
   let slug = baseSlug;
   let n = 2;
   while (await prisma.initiative.findUnique({ where: { slug } })) {
@@ -69,7 +81,7 @@ export async function approveSubmission(id: string, input: ApproveInput) {
     const initiative = await tx.initiative.create({
       data: {
         slug,
-        name: submission.name,
+        name: input.name,
         tagline: submission.tagline,
         description: submission.description,
         city: submission.city,
@@ -90,7 +102,6 @@ export async function approveSubmission(id: string, input: ApproveInput) {
         challengesAndThreats: submission.challengesAndThreats,
         challengesPublic,
         needs: submission.needs as object | undefined,
-        needsPublic,
         founded: input.founded,
         peopleReached: input.peopleReached,
         itemsRepaired: input.itemsRepaired,
@@ -98,8 +109,6 @@ export async function approveSubmission(id: string, input: ApproveInput) {
         materialsDivertedKg: input.materialsDivertedKg,
         socialCohesionScore: input.socialCohesionScore,
         website: submission.website,
-        email: submission.email,
-        emailPublic,
         socialMedia: submission.socialMedia,
         photoPath: submission.photoPath,
         videoUrl: submission.videoUrl,

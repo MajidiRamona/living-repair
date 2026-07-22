@@ -13,48 +13,59 @@ enum SubmissionStatus {
   REJECTED
 }
 
+// Governs whether — and how much of — a submission can ever be published.
+// This is the submitter's choice; the admin panel can only narrow it further
+// (e.g. hide additional fields), never override it to publish more than consented.
+enum PublicationConsent {
+  YES                   // full publish allowed, including challenges/threats
+  YES_EXCEPT_CHALLENGES // publish allowed, but challenges & threats must stay private
+  NO                    // store only — can never be published as a public initiative
+}
+
 model Submission {
   id     String           @id @default(cuid())
   status SubmissionStatus @default(PENDING)
 
   // 1. Basic information
-  name        String
+  name        String? // optional — not everyone has a formal entity/initiative name
   tagline     String
   description String
 
-  // 2. What do you repair/transform/upcycle
+  // 2. Activities
+  activities          Json
+  activitiesOtherText String?
+
+  // 3. What do you repair/transform/upcycle
   repairCategories          Json
   repairCategoriesOtherText String?
 
-  // 3. Who are you
+  // 4. Who are you
   orgTypes          Json
   orgTypesOtherText String?
 
-  // 4. People
+  // 5. People
   peopleInvolved String?
-
-  // 5. Activities
-  activities          Json
-  activitiesOtherText String?
 
   // 6. Knowledge and skills
   knowledgeSkills String?
 
-  // 7. Challenges and threats (submitter-controlled visibility)
-  challengesAndThreats      String?
-  challengesPublicRequested Boolean @default(false)
+  // 7. Why do you care about repair / heritage transmission (moved ahead of challenges)
+  heritageDimension String?
 
-  // Current needs (submitter-controlled visibility)
-  needs                Json?
-  needsOtherText       String?
-  needsPublicRequested Boolean @default(false)
+  // 8. Challenges and threats
+  challengesAndThreats String?
 
-  // Contact
+  // 9. Current needs
+  needs          Json?
+  needsOtherText String?
+
+  // 10. Contact — name and email are mandatory and never published, regardless of consent
+  contactName String
+  email       String
   website     String?
-  email       String?
   socialMedia String?
 
-  // Location
+  // 11. Location
   street  String?
   city    String
   region  String?
@@ -62,17 +73,15 @@ model Submission {
   lat     Float?
   lng     Float?
 
-  // Audience
+  // 12. Audience
   audience Json
 
-  // Optional heritage-dimension question
-  heritageDimension String?
-
-  // Photo upload
+  // Photo / video
   photoPath String?
+  videoUrl  String?
 
-  // Video link (YouTube, Vimeo, Instagram, etc.)
-  videoUrl String?
+  // Publication consent — the ceiling on what admin approval can ever expose
+  publicationConsent PublicationConsent @default(NO)
 
   // Review / moderation metadata
   rejectionReason String?
@@ -117,8 +126,7 @@ model Initiative {
   challengesAndThreats String?
   challengesPublic     Boolean @default(false)
 
-  needs       Json?
-  needsPublic Boolean @default(false)
+  needs Json?
 
   // Admin-curated impact metrics (not collected by the public form)
   founded             Int?
@@ -129,11 +137,10 @@ model Initiative {
   socialCohesionScore Int?
   sdgAlignment        Json    @default("[]")
   keywords            Json    @default("[]")
-  climateLink         String?
 
+  // Note: no email/contact-name fields here at all — contact info from the submission
+  // is never copied onto a public Initiative, so there's nothing here that could leak it.
   website     String?
-  email       String?
-  emailPublic Boolean @default(false)
   socialMedia String?
 
   photoPath String?

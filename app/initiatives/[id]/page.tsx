@@ -215,14 +215,6 @@ export default async function InitiativeProfilePage({ params }: { params: Promis
                 </>
               )}
 
-              {i.climate_link && (
-                <>
-                  <h3 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.2rem', marginTop: 32, marginBottom: 12 }}>
-                    Climate link
-                  </h3>
-                  <p>{i.climate_link}</p>
-                </>
-              )}
             </div>
 
             <aside>
@@ -242,20 +234,13 @@ export default async function InitiativeProfilePage({ params }: { params: Promis
                 </div>
               )}
 
-              {(i.website || i.email || i.social_media) && (
+              {(i.website || i.social_media) && (
                 <div className="chart-card" style={{ marginTop: 16 }}>
                   <div className="chart-title">Contact</div>
                   {i.website && (
                     <div style={{ marginTop: 8 }}>
                       <a href={i.website} style={{ fontSize: '0.95rem' }} target="_blank" rel="noopener noreferrer">
                         {i.website}
-                      </a>
-                    </div>
-                  )}
-                  {i.email && (
-                    <div style={{ marginTop: 8 }}>
-                      <a href={`mailto:${i.email}`} style={{ fontSize: '0.95rem' }}>
-                        {i.email}
                       </a>
                     </div>
                   )}

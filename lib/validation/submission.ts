@@ -15,6 +15,8 @@ const Activity = z.enum(valuesOf(ACTIVITIES));
 const Need = z.enum(valuesOf(NEEDS));
 const Audience = z.enum(valuesOf(AUDIENCE));
 
+export const PublicationConsent = z.enum(['YES', 'YES_EXCEPT_CHALLENGES', 'NO']);
+
 const emptyToUndefined = (v: unknown) => (v === '' ? undefined : v);
 
 // Plain z.string().url() accepts any scheme, including javascript: — which we later render
@@ -36,34 +38,46 @@ const httpUrl = z
 
 export const submissionSchema = z
   .object({
-    name: z.string().trim().min(2).max(200),
+    // 1. Basic information — name is optional, not everyone has a formal entity name
+    name: z.preprocess(emptyToUndefined, z.string().trim().min(2).max(200).optional()),
     tagline: z.string().trim().min(1).max(120),
     description: z.string().trim().min(50).max(4000),
 
-    repairCategories: z.array(RepairCategory).min(1),
-    repairCategoriesOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
-
-    orgTypes: z.array(OrgType).min(1),
-    orgTypesOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
-
-    peopleInvolved: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
-
+    // 2. Activities
     activities: z.array(Activity).min(1),
     activitiesOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
 
+    // 3. What do you repair/transform/upcycle
+    repairCategories: z.array(RepairCategory).min(1),
+    repairCategoriesOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
+
+    // 4. Who are you
+    orgTypes: z.array(OrgType).min(1),
+    orgTypesOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
+
+    // 5. People
+    peopleInvolved: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
+
+    // 6. Knowledge and skills
     knowledgeSkills: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
 
-    challengesAndThreats: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
-    challengesPublicRequested: z.boolean().default(false),
+    // 7. Why do you care about repair / heritage transmission
+    heritageDimension: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
 
+    // 8. Challenges and threats
+    challengesAndThreats: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
+
+    // 9. Current needs
     needs: z.array(Need).default([]),
     needsOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
-    needsPublicRequested: z.boolean().default(false),
 
+    // 10. Contact — name and email are mandatory, never published regardless of consent
+    contactName: z.string().trim().min(1).max(200),
+    email: z.string().trim().email(),
     website: z.preprocess(emptyToUndefined, httpUrl.optional()),
-    email: z.preprocess(emptyToUndefined, z.string().trim().email().optional()),
     socialMedia: z.preprocess(emptyToUndefined, z.string().max(300).optional()),
 
+    // 11. Location
     street: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
     city: z.string().trim().min(1).max(120),
     region: z.preprocess(emptyToUndefined, z.string().max(120).optional()),
@@ -71,10 +85,13 @@ export const submissionSchema = z
     lat: z.coerce.number().min(-90).max(90).optional(),
     lng: z.coerce.number().min(-180).max(180).optional(),
 
+    // 12. Audience
     audience: z.array(Audience).min(1),
-    heritageDimension: z.preprocess(emptyToUndefined, z.string().max(2000).optional()),
 
     videoUrl: z.preprocess(emptyToUndefined, httpUrl.optional()),
+
+    // Publication consent — the ceiling on what admin approval can ever expose
+    publicationConsent: PublicationConsent,
 
     honeypot: z.preprocess(emptyToUndefined, z.string().max(0).optional()),
   })
@@ -99,15 +116,15 @@ export const submissionSchema = z
 export type SubmissionInput = z.infer<typeof submissionSchema>;
 
 export const approveSchema = z.object({
+  // Admin-supplied/confirmed publish name — the submission's own name may be blank.
+  name: z.string().trim().min(1).max(200),
   domain: z.enum(['oral-traditions', 'performing-arts', 'social-practices', 'knowledge-of-nature', 'craftsmanship', 'food']),
   repairSector: z.enum(['textile', 'furniture', 'electronics', 'other']),
   lat: z.coerce.number().min(-90).max(90).optional(),
   lng: z.coerce.number().min(-180).max(180).optional(),
-  visibility: z.object({
-    challengesPublic: z.boolean().default(false),
-    needsPublic: z.boolean().default(false),
-    emailPublic: z.boolean().default(false),
-  }),
+  // Admin's editorial choice to show challenges — only ever honored if the submitter's
+  // consent was the full YES; enforced again server-side in approveSubmission(), not just here.
+  challengesPublic: z.boolean().default(false),
   hiddenFields: z.array(z.string()).default([]),
   slug: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
   founded: z.coerce.number().int().optional(),
@@ -146,7 +163,6 @@ export const initiativePatchSchema = z
     challengesAndThreats: z.string().max(2000).nullable(),
     challengesPublic: z.boolean(),
     needs: z.array(Need),
-    needsPublic: z.boolean(),
     founded: z.coerce.number().int().nullable(),
     peopleReached: z.coerce.number().int().nullable(),
     itemsRepaired: z.coerce.number().int().nullable(),
@@ -155,10 +171,7 @@ export const initiativePatchSchema = z
     socialCohesionScore: z.coerce.number().int().nullable(),
     sdgAlignment: z.array(z.number().int()),
     keywords: z.array(z.string().max(60)),
-    climateLink: z.string().max(2000).nullable(),
     website: httpUrl.nullable(),
-    email: z.string().trim().email().nullable(),
-    emailPublic: z.boolean(),
     socialMedia: z.string().max(300).nullable(),
     videoUrl: httpUrl.nullable(),
     featured: z.boolean(),

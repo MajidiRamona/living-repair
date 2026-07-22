@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 type Row = {
   id: string;
-  name: string;
+  name: string | null;
   city: string;
   country: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -47,7 +47,7 @@ export default function SubmissionsTable({ submissions }: { submissions: Row[] }
             <tbody>
               {list.map((s) => (
                 <tr key={s.id}>
-                  <td>{s.name}</td>
+                  <td>{s.name || <em style={{ color: 'var(--ink-2)' }}>(no name)</em>}</td>
                   <td>{s.city}, {s.country}</td>
                   <td>{new Date(s.createdAt).toLocaleDateString()}</td>
                   <td>

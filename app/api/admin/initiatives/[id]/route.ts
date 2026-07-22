@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getInitiativeById, updateInitiative, deleteInitiative } from '@/lib/adminInitiatives';
+import { getInitiativeById, updateInitiative, deleteInitiative, getPublicationConsentForInitiative } from '@/lib/adminInitiatives';
 import { deleteUploadedFile } from '@/lib/uploads';
 import { initiativePatchSchema } from '@/lib/validation/submission';
 
@@ -23,6 +23,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const parsed = initiativePatchSchema.safeParse(raw);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+
+  // The consent ceiling set at approval time is permanent — an admin can never flip
+  // challengesPublic to true after the fact if the submitter didn't consent to it.
+  if (parsed.data.challengesPublic === true) {
+    const consent = await getPublicationConsentForInitiative(id);
+    if (consent !== null && consent !== 'YES') {
+      parsed.data.challengesPublic = false;
+    }
   }
 
   const updated = await updateInitiative(id, parsed.data);

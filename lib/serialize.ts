@@ -30,7 +30,6 @@ export function serializePublicInitiative(i: Initiative) {
     social_cohesion_score: i.socialCohesionScore ?? undefined,
     sdg_alignment: asArray(i.sdgAlignment),
     keywords: asArray(i.keywords),
-    climate_link: show('climateLink', i.climateLink ?? undefined),
     website: i.website ?? undefined,
     featured: i.featured,
 
@@ -42,8 +41,7 @@ export function serializePublicInitiative(i: Initiative) {
     knowledge_skills: show('knowledgeSkills', i.knowledgeSkills ?? undefined),
     heritage_dimension: show('heritageDimension', i.heritageDimension ?? undefined),
     challenges_and_threats: i.challengesPublic ? i.challengesAndThreats ?? undefined : undefined,
-    needs: i.needsPublic ? asArray(i.needs) : undefined,
-    email: i.emailPublic ? i.email ?? undefined : undefined,
+    needs: show('needs', asArray(i.needs)),
     social_media: i.socialMedia ?? undefined,
     street: show('street', i.street ?? undefined),
     region: i.region ?? undefined,

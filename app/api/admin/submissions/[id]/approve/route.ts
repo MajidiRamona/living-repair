@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { approveSchema } from '@/lib/validation/submission';
-import { approveSubmission, ApprovalValidationError } from '@/lib/submissions';
+import { approveSubmission, ApprovalValidationError, ConsentDeclinedError } from '@/lib/submissions';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,6 +21,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const initiative = await approveSubmission(id, parsed.data);
     return NextResponse.json(initiative, { status: 201 });
   } catch (err) {
+    if (err instanceof ConsentDeclinedError) {
+      return NextResponse.json({ error: err.message }, { status: 403 });
+    }
     if (err instanceof ApprovalValidationError) {
       return NextResponse.json({ error: err.message, fields: err.fields }, { status: 422 });
     }

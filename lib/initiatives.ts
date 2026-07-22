@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma';
 import { serializePublicInitiative, type PublicInitiative } from '@/lib/serialize';
-import { staticMetrics } from '@/lib/staticMetrics';
 
 export async function getPublishedInitiatives(): Promise<PublicInitiative[]> {
   const rows = await prisma.initiative.findMany({
@@ -28,7 +27,6 @@ export async function getMetrics() {
   });
 
   return {
-    ...staticMetrics,
     repair_impact: {
       items_repaired_total: agg._sum.itemsRepaired ?? 0,
       co2_avoided_t_total: agg._sum.co2SavedT ?? 0,

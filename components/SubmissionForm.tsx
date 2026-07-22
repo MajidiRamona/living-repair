@@ -14,21 +14,21 @@ type FormState = {
   name: string;
   tagline: string;
   description: string;
+  activities: string[];
+  activitiesOtherText: string;
   repairCategories: string[];
   repairCategoriesOtherText: string;
   orgTypes: string[];
   orgTypesOtherText: string;
   peopleInvolved: string;
-  activities: string[];
-  activitiesOtherText: string;
   knowledgeSkills: string;
+  heritageDimension: string;
   challengesAndThreats: string;
-  challengesPublicRequested: boolean;
   needs: string[];
   needsOtherText: string;
-  needsPublicRequested: boolean;
-  website: string;
+  contactName: string;
   email: string;
+  website: string;
   socialMedia: string;
   street: string;
   city: string;
@@ -37,8 +37,8 @@ type FormState = {
   lat: string;
   lng: string;
   audience: string[];
-  heritageDimension: string;
   videoUrl: string;
+  publicationConsent: '' | 'YES' | 'YES_EXCEPT_CHALLENGES' | 'NO';
   honeypot: string;
 };
 
@@ -46,21 +46,21 @@ const INITIAL: FormState = {
   name: '',
   tagline: '',
   description: '',
+  activities: [],
+  activitiesOtherText: '',
   repairCategories: [],
   repairCategoriesOtherText: '',
   orgTypes: [],
   orgTypesOtherText: '',
   peopleInvolved: '',
-  activities: [],
-  activitiesOtherText: '',
   knowledgeSkills: '',
+  heritageDimension: '',
   challengesAndThreats: '',
-  challengesPublicRequested: false,
   needs: [],
   needsOtherText: '',
-  needsPublicRequested: false,
-  website: '',
+  contactName: '',
   email: '',
+  website: '',
   socialMedia: '',
   street: '',
   city: '',
@@ -69,8 +69,8 @@ const INITIAL: FormState = {
   lat: '',
   lng: '',
   audience: [],
-  heritageDimension: '',
   videoUrl: '',
+  publicationConsent: '',
   honeypot: '',
 };
 
@@ -112,10 +112,17 @@ export default function SubmissionForm() {
     });
   }
 
-  const wordCount = form.description.trim() ? form.description.trim().split(/\s+/).length : 0;
+  const descriptionWordCount = form.description.trim() ? form.description.trim().split(/\s+/).length : 0;
+  const knowledgeWordCount = form.knowledgeSkills.trim() ? form.knowledgeSkills.trim().split(/\s+/).length : 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.publicationConsent) {
+      setStatus('err');
+      setErrorMessage('Please choose one of the publishing options at the bottom of the form.');
+      return;
+    }
+
     setStatus('submitting');
     setErrorMessage('');
 
@@ -167,8 +174,8 @@ export default function SubmissionForm() {
       <div className="label" style={{ marginTop: 0 }}>1. Basic information</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
-          <label htmlFor="name">Name of the entity, initiative, or organization</label>
-          <input id="name" type="text" required value={form.name} onChange={(e) => set('name', e.target.value)} />
+          <label htmlFor="name">Name of the entity, initiative, or organization (optional)</label>
+          <input id="name" type="text" value={form.name} onChange={(e) => set('name', e.target.value)} />
         </div>
         <div className="field">
           <label htmlFor="tagline">One-line tagline</label>
@@ -191,11 +198,33 @@ export default function SubmissionForm() {
             onChange={(e) => set('description', e.target.value)}
             style={{ minHeight: 180 }}
           />
-          <div className="hint">{wordCount} words — aim for 300–500</div>
+          <div className="hint">{descriptionWordCount} words — aim for 300–500</div>
         </div>
       </div>
 
-      <div className="label">2. What do you repair, transform, or upcycle?</div>
+      <div className="label">2. Activities</div>
+      <div className="form-grid full" style={{ marginBottom: 32 }}>
+        <fieldset className="field">
+          <legend>Which activities does your initiative organize?</legend>
+          <CheckboxGroup name="activities" options={ACTIVITIES} selected={form.activities} onToggle={(v) => toggleIn('activities', v)} />
+          {form.activities.includes('other') && (
+            <>
+              <label htmlFor="activitiesOtherText" className="sr-only">Please specify other activity</label>
+              <input
+                id="activitiesOtherText"
+                className="other-input"
+                type="text"
+                placeholder="Please specify"
+                required
+                value={form.activitiesOtherText}
+                onChange={(e) => set('activitiesOtherText', e.target.value)}
+              />
+            </>
+          )}
+        </fieldset>
+      </div>
+
+      <div className="label">3. What do you repair, transform, or upcycle?</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>Select all that apply</legend>
@@ -222,7 +251,7 @@ export default function SubmissionForm() {
         </fieldset>
       </div>
 
-      <div className="label">3. Who are you?</div>
+      <div className="label">4. Who are you?</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>Select all that apply</legend>
@@ -244,7 +273,7 @@ export default function SubmissionForm() {
         </fieldset>
       </div>
 
-      <div className="label">4. People</div>
+      <div className="label">5. People</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
           <label htmlFor="peopleInvolved">Describe the people involved and their roles (staff, volunteers, craftspeople, students, community members...)</label>
@@ -252,63 +281,41 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">5. Activities</div>
-      <div className="form-grid full" style={{ marginBottom: 32 }}>
-        <fieldset className="field">
-          <legend>Which activities does your initiative organize?</legend>
-          <CheckboxGroup name="activities" options={ACTIVITIES} selected={form.activities} onToggle={(v) => toggleIn('activities', v)} />
-          {form.activities.includes('other') && (
-            <>
-              <label htmlFor="activitiesOtherText" className="sr-only">Please specify other activity</label>
-              <input
-                id="activitiesOtherText"
-                className="other-input"
-                type="text"
-                placeholder="Please specify"
-                required
-                value={form.activitiesOtherText}
-                onChange={(e) => set('activitiesOtherText', e.target.value)}
-              />
-            </>
-          )}
-        </fieldset>
-      </div>
-
       <div className="label">6. Knowledge and skills</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
           <label htmlFor="knowledgeSkills">What knowledge, techniques, or skills are practiced, transmitted, or developed?</label>
           <textarea id="knowledgeSkills" value={form.knowledgeSkills} onChange={(e) => set('knowledgeSkills', e.target.value)} />
+          <div className="hint">{knowledgeWordCount} words — aim for 300–500</div>
         </div>
       </div>
 
-      <div className="label">7. Research questions (optional)</div>
-
+      <div className="label">7. Living heritage</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
-          <div className="subheading">Challenges and threats</div>
+          <label htmlFor="heritageDimension">
+            Why do you care about repair, and would you like repair knowledge to be transmitted through generations? Why?
+          </label>
+          <textarea id="heritageDimension" value={form.heritageDimension} onChange={(e) => set('heritageDimension', e.target.value)} />
+        </div>
+      </div>
+
+      <div className="label">8. Challenges and threats</div>
+      <div className="form-grid full" style={{ marginBottom: 32 }}>
+        <div className="field">
           <label htmlFor="challengesAndThreats">What are the main challenges your initiative faces?</label>
           <textarea
             id="challengesAndThreats"
             value={form.challengesAndThreats}
             onChange={(e) => set('challengesAndThreats', e.target.value)}
           />
-          <label className="checkbox-inline" style={{ marginTop: 10 }} htmlFor="challengesPublicRequested">
-            <input
-              id="challengesPublicRequested"
-              type="checkbox"
-              checked={form.challengesPublicRequested}
-              onChange={(e) => set('challengesPublicRequested', e.target.checked)}
-            />
-            Make this information publicly visible
-          </label>
         </div>
       </div>
 
+      <div className="label">9. Current needs</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
-          <legend className="subheading" style={{ textTransform: 'none', letterSpacing: 'normal' }}>Current needs</legend>
-          <div className="hint" style={{ marginTop: -6, marginBottom: 10 }}>Select all that apply</div>
+          <legend>Select all that apply</legend>
           <CheckboxGroup name="needs" options={NEEDS} selected={form.needs} onToggle={(v) => toggleIn('needs', v)} />
           {form.needs.includes('other') && (
             <>
@@ -324,27 +331,25 @@ export default function SubmissionForm() {
               />
             </>
           )}
-          <label className="checkbox-inline" style={{ marginTop: 10 }} htmlFor="needsPublicRequested">
-            <input
-              id="needsPublicRequested"
-              type="checkbox"
-              checked={form.needsPublicRequested}
-              onChange={(e) => set('needsPublicRequested', e.target.checked)}
-            />
-            Make this information publicly visible
-          </label>
         </fieldset>
       </div>
 
-      <div className="label">8. Contact</div>
+      <div className="label">10. Contact</div>
+      <div className="hint" style={{ marginTop: -14, marginBottom: 20 }}>
+        Your name and email are for our records only — they are never published, whatever you choose below.
+      </div>
       <div className="form-grid" style={{ marginBottom: 32 }}>
         <div className="field">
-          <label htmlFor="website">Website</label>
-          <input id="website" type="url" placeholder="https://" value={form.website} onChange={(e) => set('website', e.target.value)} />
+          <label htmlFor="contactName">Your name</label>
+          <input id="contactName" type="text" required value={form.contactName} onChange={(e) => set('contactName', e.target.value)} />
         </div>
         <div className="field">
-          <label htmlFor="email">Email (optional)</label>
-          <input id="email" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} />
+          <label htmlFor="email">Your email</label>
+          <input id="email" type="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="website">Website (optional)</label>
+          <input id="website" type="url" placeholder="https://" value={form.website} onChange={(e) => set('website', e.target.value)} />
         </div>
         <div className="field">
           <label htmlFor="socialMedia">Social media (optional)</label>
@@ -352,7 +357,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">9. Location</div>
+      <div className="label">11. Location</div>
       <div className="form-grid" style={{ marginBottom: 12 }}>
         <div className="field">
           <label htmlFor="street">Street</label>
@@ -382,7 +387,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">10. Audience</div>
+      <div className="label">12. Audience</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>Who participates?</legend>
@@ -390,17 +395,7 @@ export default function SubmissionForm() {
         </fieldset>
       </div>
 
-      <div className="label">11. Living heritage (optional)</div>
-      <div className="form-grid full" style={{ marginBottom: 32 }}>
-        <div className="field">
-          <label htmlFor="heritageDimension">
-            Do you consider the knowledge or practices involved to be part of a cultural tradition or living heritage? Why or why not?
-          </label>
-          <textarea id="heritageDimension" value={form.heritageDimension} onChange={(e) => set('heritageDimension', e.target.value)} />
-        </div>
-      </div>
-
-      <div className="label">12. Photo (optional)</div>
+      <div className="label">13. Photo (optional)</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
           <label htmlFor="photo">A photo of your initiative, workshop, or work</label>
@@ -413,7 +408,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">13. Video (optional)</div>
+      <div className="label">14. Video (optional)</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
           <label htmlFor="videoUrl">Link to a video about your initiative (YouTube, Vimeo, Instagram...)</label>
@@ -426,6 +421,50 @@ export default function SubmissionForm() {
           />
           <div className="hint">Paste a link — no need to upload a file</div>
         </div>
+      </div>
+
+      <div className="label">15. Publishing your information</div>
+      <div className="form-grid full" style={{ marginBottom: 32 }}>
+        <fieldset className="field">
+          <legend>
+            We&apos;d love to promote your initiative on the platform — but it&apos;s entirely your choice whether
+            any of this becomes public. Submissions are reviewed either way, and we never publish your name, email,
+            or anything you didn&apos;t consent to.
+          </legend>
+          <div className="checkbox-row" style={{ gridTemplateColumns: '1fr' }}>
+            <label htmlFor="consent-yes">
+              <input
+                id="consent-yes"
+                type="radio"
+                name="publicationConsent"
+                required
+                checked={form.publicationConsent === 'YES'}
+                onChange={() => set('publicationConsent', 'YES')}
+              />
+              Yes — you can publish everything, including the challenges and threats section
+            </label>
+            <label htmlFor="consent-yes-except">
+              <input
+                id="consent-yes-except"
+                type="radio"
+                name="publicationConsent"
+                checked={form.publicationConsent === 'YES_EXCEPT_CHALLENGES'}
+                onChange={() => set('publicationConsent', 'YES_EXCEPT_CHALLENGES')}
+              />
+              Yes, except the challenges and threats section — keep that part private
+            </label>
+            <label htmlFor="consent-no">
+              <input
+                id="consent-no"
+                type="radio"
+                name="publicationConsent"
+                checked={form.publicationConsent === 'NO'}
+                onChange={() => set('publicationConsent', 'NO')}
+              />
+              No — please don&apos;t publish anything from this submission, just keep it on file
+            </label>
+          </div>
+        </fieldset>
       </div>
 
       <button type="submit" className="btn" disabled={status === 'submitting'}>

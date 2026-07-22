@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getInitiativeById } from '@/lib/adminInitiatives';
+import { getInitiativeById, getPublicationConsentForInitiative } from '@/lib/adminInitiatives';
 import AdminSubNav from '@/components/admin/AdminSubNav';
 import InitiativeEditForm from '@/components/admin/InitiativeEditForm';
 
@@ -7,7 +7,10 @@ export const revalidate = 0;
 
 export default async function AdminInitiativePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const initiative = await getInitiativeById(id);
+  const [initiative, publicationConsent] = await Promise.all([
+    getInitiativeById(id),
+    getPublicationConsentForInitiative(id),
+  ]);
   if (!initiative) notFound();
 
   return (
@@ -15,6 +18,7 @@ export default async function AdminInitiativePage({ params }: { params: Promise<
       <div className="container">
         <AdminSubNav />
         <InitiativeEditForm
+          publicationConsent={publicationConsent}
           initiative={{
             id: initiative.id,
             slug: initiative.slug,
@@ -39,7 +43,6 @@ export default async function AdminInitiativePage({ params }: { params: Promise<
             challengesAndThreats: initiative.challengesAndThreats,
             challengesPublic: initiative.challengesPublic,
             needs: (initiative.needs as string[] | null) ?? [],
-            needsPublic: initiative.needsPublic,
             founded: initiative.founded,
             peopleReached: initiative.peopleReached,
             itemsRepaired: initiative.itemsRepaired,
@@ -48,10 +51,7 @@ export default async function AdminInitiativePage({ params }: { params: Promise<
             socialCohesionScore: initiative.socialCohesionScore,
             sdgAlignment: (initiative.sdgAlignment as number[] | null) ?? [],
             keywords: (initiative.keywords as string[] | null) ?? [],
-            climateLink: initiative.climateLink,
             website: initiative.website,
-            email: initiative.email,
-            emailPublic: initiative.emailPublic,
             socialMedia: initiative.socialMedia,
             videoUrl: initiative.videoUrl,
             photoPath: initiative.photoPath,

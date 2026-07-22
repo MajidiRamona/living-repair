@@ -29,8 +29,6 @@ const initiatives = [
     socialCohesionScore: 84,
     sdgAlignment: [4, 10, 11, 16],
     keywords: ['oral memory', 'storytelling', 'intangible heritage', 'Geneva'],
-    climateLink:
-      'Reduces reliance on energy-intensive media production; preserves low-carbon knowledge-transfer practices.',
     website: 'https://histoiresanschute.ch',
     featured: true,
     published: true,
@@ -61,7 +59,6 @@ const initiatives = [
     socialCohesionScore: 78,
     sdgAlignment: [11, 12, 13],
     keywords: ['textile repair', 'upcycling', 'craftsmanship', 'Geneva', 'slow fashion'],
-    climateLink: 'Each repaired garment avoids ~3.2 kg CO2e versus replacement; preserves slow-craft knowledge.',
     website: 'https://amakbro.ch',
     featured: true,
     published: true,

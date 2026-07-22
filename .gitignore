@@ -10,3 +10,4 @@ tsconfig.tsbuildinfo
 .env
 .env.local
 /uploads/
+PROJECT_STATUS.md

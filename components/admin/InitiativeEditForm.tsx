@@ -37,7 +37,6 @@ type InitiativeData = {
   challengesAndThreats: string | null;
   challengesPublic: boolean;
   needs: string[];
-  needsPublic: boolean;
   founded: number | null;
   peopleReached: number | null;
   itemsRepaired: number | null;
@@ -46,10 +45,7 @@ type InitiativeData = {
   socialCohesionScore: number | null;
   sdgAlignment: number[];
   keywords: string[];
-  climateLink: string | null;
   website: string | null;
-  email: string | null;
-  emailPublic: boolean;
   socialMedia: string | null;
   videoUrl: string | null;
   photoPath: string | null;
@@ -61,8 +57,16 @@ function toStr(v: number | string | null | undefined): string {
   return v === null || v === undefined ? '' : String(v);
 }
 
-export default function InitiativeEditForm({ initiative }: { initiative: InitiativeData }) {
+export default function InitiativeEditForm({
+  initiative,
+  publicationConsent,
+}: {
+  initiative: InitiativeData;
+  publicationConsent: string | null;
+}) {
   const router = useRouter();
+  // null = no linked submission (e.g. hand-seeded data) — unrestricted.
+  const challengesLocked = publicationConsent !== null && publicationConsent !== 'YES';
   const [form, setForm] = useState({
     name: initiative.name,
     tagline: initiative.tagline,
@@ -85,7 +89,6 @@ export default function InitiativeEditForm({ initiative }: { initiative: Initiat
     challengesAndThreats: initiative.challengesAndThreats ?? '',
     challengesPublic: initiative.challengesPublic,
     needs: initiative.needs,
-    needsPublic: initiative.needsPublic,
     founded: toStr(initiative.founded),
     peopleReached: toStr(initiative.peopleReached),
     itemsRepaired: toStr(initiative.itemsRepaired),
@@ -94,10 +97,7 @@ export default function InitiativeEditForm({ initiative }: { initiative: Initiat
     socialCohesionScore: toStr(initiative.socialCohesionScore),
     sdgAlignment: initiative.sdgAlignment.join(', '),
     keywords: initiative.keywords.join(', '),
-    climateLink: initiative.climateLink ?? '',
     website: initiative.website ?? '',
-    email: initiative.email ?? '',
-    emailPublic: initiative.emailPublic,
     socialMedia: initiative.socialMedia ?? '',
     videoUrl: initiative.videoUrl ?? '',
     featured: initiative.featured,
@@ -147,7 +147,6 @@ export default function InitiativeEditForm({ initiative }: { initiative: Initiat
       challengesAndThreats: form.challengesAndThreats || null,
       challengesPublic: form.challengesPublic,
       needs: form.needs,
-      needsPublic: form.needsPublic,
       founded: numOrNull(form.founded),
       peopleReached: numOrNull(form.peopleReached),
       itemsRepaired: numOrNull(form.itemsRepaired),
@@ -163,10 +162,7 @@ export default function InitiativeEditForm({ initiative }: { initiative: Initiat
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
-      climateLink: form.climateLink || null,
       website: form.website || null,
-      email: form.email || null,
-      emailPublic: form.emailPublic,
       socialMedia: form.socialMedia || null,
       videoUrl: form.videoUrl || null,
       featured: form.featured,
@@ -311,20 +307,27 @@ export default function InitiativeEditForm({ initiative }: { initiative: Initiat
         <div className="field">
           <label htmlFor="i-challenges">Challenges and threats</label>
           <textarea id="i-challenges" value={form.challengesAndThreats} onChange={(e) => set('challengesAndThreats', e.target.value)} />
-          <label className="checkbox-inline" style={{ marginTop: 10 }} htmlFor="i-challengesPublic">
-            <input id="i-challengesPublic" type="checkbox" checked={form.challengesPublic} onChange={(e) => set('challengesPublic', e.target.checked)} />
+          <label className="checkbox-inline" style={{ marginTop: 10, opacity: challengesLocked ? 0.5 : 1 }} htmlFor="i-challengesPublic">
+            <input
+              id="i-challengesPublic"
+              type="checkbox"
+              checked={form.challengesPublic}
+              disabled={challengesLocked}
+              onChange={(e) => set('challengesPublic', e.target.checked)}
+            />
             Public on profile page
           </label>
+          {challengesLocked && (
+            <div className="hint">
+              The submitter did not consent to publishing this — it can never be made public, regardless of this toggle.
+            </div>
+          )}
         </div>
       </div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>Current needs</legend>
           <CheckboxGroup name="i-needs" options={NEEDS} selected={form.needs} onToggle={(v) => toggleIn('needs', v)} />
-          <label className="checkbox-inline" style={{ marginTop: 10 }} htmlFor="i-needsPublic">
-            <input id="i-needsPublic" type="checkbox" checked={form.needsPublic} onChange={(e) => set('needsPublic', e.target.checked)} />
-            Public on profile page
-          </label>
         </fieldset>
       </div>
 
@@ -369,10 +372,6 @@ export default function InitiativeEditForm({ initiative }: { initiative: Initiat
           <label htmlFor="i-keywords">Keywords (comma-separated)</label>
           <input id="i-keywords" type="text" value={form.keywords} onChange={(e) => set('keywords', e.target.value)} />
         </div>
-        <div className="field">
-          <label htmlFor="i-climateLink">Climate link (one sentence on the climate/sustainability angle)</label>
-          <textarea id="i-climateLink" value={form.climateLink} onChange={(e) => set('climateLink', e.target.value)} />
-        </div>
       </div>
 
       <div className="label">Contact</div>
@@ -380,14 +379,6 @@ export default function InitiativeEditForm({ initiative }: { initiative: Initiat
         <div className="field">
           <label htmlFor="i-website">Website</label>
           <input id="i-website" type="url" value={form.website} onChange={(e) => set('website', e.target.value)} />
-        </div>
-        <div className="field">
-          <label htmlFor="i-email">Email</label>
-          <input id="i-email" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} />
-          <label className="checkbox-inline" style={{ marginTop: 10 }} htmlFor="i-emailPublic">
-            <input id="i-emailPublic" type="checkbox" checked={form.emailPublic} onChange={(e) => set('emailPublic', e.target.checked)} />
-            Public on profile page
-          </label>
         </div>
         <div className="field">
           <label htmlFor="i-socialMedia">Social media</label>
