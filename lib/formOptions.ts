@@ -1,18 +1,23 @@
 export type Option = { value: string; label: string };
 
+// Alphabetical order, items rather than materials — matches the repair typology established
+// by the Chambre des Métiers et de l'Artisanat. "Other" stays last regardless of alphabetical
+// order since it's the catch-all.
 export const REPAIR_CATEGORIES: Option[] = [
-  { value: 'textiles', label: 'Textiles' },
-  { value: 'wood_furniture', label: 'Wood and furniture' },
-  { value: 'leather', label: 'Leather' },
-  { value: 'electronics', label: 'Electronics' },
+  { value: 'bicycles_sports_equipment', label: 'Bicycles, sports equipment' },
+  { value: 'clothes_textiles', label: 'Clothes, textiles' },
+  { value: 'computers_phones_devices', label: 'Computers, phones, smart devices' },
+  { value: 'furniture', label: 'Furniture' },
+  { value: 'garden_diy_equipment', label: 'Garden and DIY equipment' },
   { value: 'household_appliances', label: 'Household appliances' },
-  { value: 'bicycles', label: 'Bicycles' },
-  { value: 'sports_equipment', label: 'Sports equipment' },
+  { value: 'jewelry', label: 'Jewelry' },
+  { value: 'mixed_general', label: 'Mixed/general repair' },
+  { value: 'multimedia', label: 'Multimedia' },
+  { value: 'musical_instruments', label: 'Musical instruments' },
+  { value: 'shoes_leather_goods', label: 'Shoes, leather goods' },
+  { value: 'tableware_home_decor', label: 'Tableware, home décor' },
   { value: 'toys', label: 'Toys' },
-  { value: 'jewellery', label: 'Jewellery' },
-  { value: 'watches', label: 'Watches' },
-  { value: 'ceramics', label: 'Ceramics' },
-  { value: 'mixed_general', label: 'Mixed / General repair' },
+  { value: 'watches_clocks', label: 'Watches, clocks' },
   { value: 'other', label: 'Other (please specify)' },
 ];
 
@@ -87,9 +92,15 @@ export const DOMAINS: Option[] = [
 // Suggests a repair_sector (the 4-value taxonomy that drives filter chips)
 // from the richer repairCategories a submitter picked, for the admin to confirm/override.
 export function suggestRepairSector(repairCategories: string[]): string {
-  if (repairCategories.includes('textiles') || repairCategories.includes('leather')) return 'textile';
-  if (repairCategories.includes('wood_furniture')) return 'furniture';
-  if (repairCategories.includes('electronics') || repairCategories.includes('household_appliances')) return 'electronics';
+  if (repairCategories.includes('clothes_textiles') || repairCategories.includes('shoes_leather_goods')) return 'textile';
+  if (repairCategories.includes('furniture')) return 'furniture';
+  if (
+    repairCategories.includes('computers_phones_devices') ||
+    repairCategories.includes('household_appliances') ||
+    repairCategories.includes('multimedia')
+  ) {
+    return 'electronics';
+  }
   return 'other';
 }
 

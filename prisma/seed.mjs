@@ -47,7 +47,7 @@ const initiatives = [
     lng: 6.1466,
     domain: 'craftsmanship',
     repairSector: 'textile',
-    repairCategories: ['textiles'],
+    repairCategories: ['clothes_textiles'],
     orgTypes: ['community_group'],
     activities: ['repair_services', 'repair_workshops', 'upcycling'],
     audience: ['general_public'],
