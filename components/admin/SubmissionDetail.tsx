@@ -29,8 +29,10 @@ type SubmissionData = {
   activitiesOtherText: string | null;
   knowledgeSkills: string | null;
   challengesAndThreats: string | null;
+  challengesAndThreatsPublic: boolean;
   needs: string[];
   needsOtherText: string | null;
+  needsPublic: boolean;
   contactName: string;
   email: string;
   website: string | null;
@@ -42,7 +44,8 @@ type SubmissionData = {
   lat: number | null;
   lng: number | null;
   audience: string[];
-  heritageDimension: string | null;
+  whyCareAboutRepair: string | null;
+  knowledgeTransmission: string | null;
   photoPath: string | null;
   videoUrl: string | null;
   publicationConsent: 'YES' | 'YES_EXCEPT_CHALLENGES' | 'NO';
@@ -90,7 +93,7 @@ export default function SubmissionDetail({ submission: s }: { submission: Submis
   const [name, setName] = useState(s.name ?? '');
   const [domain, setDomain] = useState(DOMAINS[4].value); // craftsmanship default
   const [repairSector, setRepairSector] = useState(suggestRepairSector(s.repairCategories));
-  const [challengesPublic, setChallengesPublic] = useState(s.publicationConsent === 'YES');
+  const [challengesPublic, setChallengesPublic] = useState(s.publicationConsent === 'YES' && s.challengesAndThreatsPublic);
   const [lat, setLat] = useState(s.lat?.toString() ?? '');
   const [lng, setLng] = useState(s.lng?.toString() ?? '');
   const [featured, setFeatured] = useState(false);
@@ -173,7 +176,6 @@ export default function SubmissionDetail({ submission: s }: { submission: Submis
           {s.orgTypesOtherText && <Field label="— Other, specified" value={s.orgTypesOtherText} />}
           <Field label="People involved" value={s.peopleInvolved} />
           <Field label="Knowledge and skills" value={s.knowledgeSkills} />
-          <Field label="Living heritage" value={s.heritageDimension} />
           <Field
             label="Challenges and threats"
             value={s.challengesAndThreats}
@@ -186,8 +188,20 @@ export default function SubmissionDetail({ submission: s }: { submission: Submis
               Submitter did not consent to publishing this section — it cannot be made public.
             </div>
           )}
+          {s.challengesAndThreatsPublic && (
+            <div className="hint" style={{ marginTop: -10, marginBottom: 16 }}>
+              Submitter checked &quot;make this publicly visible&quot; for this section.
+            </div>
+          )}
           <Field label="Current needs" value={labelsFor(NEEDS, s.needs).join(', ')} />
           {s.needsOtherText && <Field label="— Other, specified" value={s.needsOtherText} />}
+          {s.needsPublic && (
+            <div className="hint" style={{ marginTop: -10, marginBottom: 16 }}>
+              Submitter checked &quot;make this publicly visible&quot; for current needs.
+            </div>
+          )}
+          <Field label="Why they care about repair" value={s.whyCareAboutRepair} />
+          <Field label="Knowledge transmission to future generations" value={s.knowledgeTransmission} />
           <Field label="Audience" value={labelsFor(AUDIENCE, s.audience).join(', ')} />
           <Field label="Contact name · internal only, never published" value={s.contactName} />
           <Field label="Contact email · internal only, never published" value={s.email} />

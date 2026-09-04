@@ -1,23 +1,18 @@
 export type Option = { value: string; label: string };
 
-// Alphabetical order, items rather than materials — matches the repair typology established
-// by the Chambre des Métiers et de l'Artisanat. "Other" stays last regardless of alphabetical
-// order since it's the catch-all.
 export const REPAIR_CATEGORIES: Option[] = [
-  { value: 'bicycles_sports_equipment', label: 'Bicycles, sports equipment' },
-  { value: 'clothes_textiles', label: 'Clothes, textiles' },
-  { value: 'computers_phones_devices', label: 'Computers, phones, smart devices' },
-  { value: 'furniture', label: 'Furniture' },
-  { value: 'garden_diy_equipment', label: 'Garden and DIY equipment' },
+  { value: 'textiles', label: 'Textiles' },
+  { value: 'wood_furniture', label: 'Wood and furniture' },
+  { value: 'leather', label: 'Leather' },
+  { value: 'electronics', label: 'Electronics' },
   { value: 'household_appliances', label: 'Household appliances' },
-  { value: 'jewelry', label: 'Jewelry' },
-  { value: 'mixed_general', label: 'Mixed/general repair' },
-  { value: 'multimedia', label: 'Multimedia' },
-  { value: 'musical_instruments', label: 'Musical instruments' },
-  { value: 'shoes_leather_goods', label: 'Shoes, leather goods' },
-  { value: 'tableware_home_decor', label: 'Tableware, home décor' },
+  { value: 'bicycles', label: 'Bicycles' },
+  { value: 'sports_equipment', label: 'Sports equipment' },
   { value: 'toys', label: 'Toys' },
-  { value: 'watches_clocks', label: 'Watches, clocks' },
+  { value: 'jewellery', label: 'Jewellery' },
+  { value: 'watches', label: 'Watches' },
+  { value: 'ceramics', label: 'Ceramics' },
+  { value: 'mixed_general', label: 'Mixed / General repair' },
   { value: 'other', label: 'Other (please specify)' },
 ];
 
@@ -92,20 +87,33 @@ export const DOMAINS: Option[] = [
 // Suggests a repair_sector (the 4-value taxonomy that drives filter chips)
 // from the richer repairCategories a submitter picked, for the admin to confirm/override.
 export function suggestRepairSector(repairCategories: string[]): string {
-  if (repairCategories.includes('clothes_textiles') || repairCategories.includes('shoes_leather_goods')) return 'textile';
-  if (repairCategories.includes('furniture')) return 'furniture';
-  if (
-    repairCategories.includes('computers_phones_devices') ||
-    repairCategories.includes('household_appliances') ||
-    repairCategories.includes('multimedia')
-  ) {
+  if (repairCategories.includes('textiles') || repairCategories.includes('leather')) return 'textile';
+  if (repairCategories.includes('wood_furniture')) return 'furniture';
+  if (repairCategories.includes('electronics') || repairCategories.includes('household_appliances')) {
     return 'electronics';
   }
   return 'other';
 }
 
+// Repair-category values retired by the current REPAIR_CATEGORIES list but still present on
+// already-published initiatives/submissions from before this taxonomy change — kept only so
+// old records render a real label instead of a raw slug like "clothes_textiles".
+const LEGACY_REPAIR_CATEGORY_LABELS: Record<string, string> = {
+  bicycles_sports_equipment: 'Bicycles, sports equipment',
+  clothes_textiles: 'Clothes, textiles',
+  computers_phones_devices: 'Computers, phones, smart devices',
+  furniture: 'Furniture',
+  garden_diy_equipment: 'Garden and DIY equipment',
+  jewelry: 'Jewelry',
+  multimedia: 'Multimedia',
+  musical_instruments: 'Musical instruments',
+  shoes_leather_goods: 'Shoes, leather goods',
+  tableware_home_decor: 'Tableware, home décor',
+  watches_clocks: 'Watches, clocks',
+};
+
 function labelFor(options: Option[], value: string): string {
-  return options.find((o) => o.value === value)?.label ?? value;
+  return options.find((o) => o.value === value)?.label ?? LEGACY_REPAIR_CATEGORY_LABELS[value] ?? value;
 }
 
 export function labelsFor(options: Option[], values: string[]): string[] {

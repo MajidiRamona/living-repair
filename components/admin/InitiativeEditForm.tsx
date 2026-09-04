@@ -33,7 +33,8 @@ type InitiativeData = {
   audience: string[];
   peopleInvolved: string | null;
   knowledgeSkills: string | null;
-  heritageDimension: string | null;
+  whyCareAboutRepair: string | null;
+  knowledgeTransmission: string | null;
   challengesAndThreats: string | null;
   challengesPublic: boolean;
   needs: string[];
@@ -85,7 +86,8 @@ export default function InitiativeEditForm({
     audience: initiative.audience,
     peopleInvolved: initiative.peopleInvolved ?? '',
     knowledgeSkills: initiative.knowledgeSkills ?? '',
-    heritageDimension: initiative.heritageDimension ?? '',
+    whyCareAboutRepair: initiative.whyCareAboutRepair ?? '',
+    knowledgeTransmission: initiative.knowledgeTransmission ?? '',
     challengesAndThreats: initiative.challengesAndThreats ?? '',
     challengesPublic: initiative.challengesPublic,
     needs: initiative.needs,
@@ -143,7 +145,8 @@ export default function InitiativeEditForm({
       audience: form.audience,
       peopleInvolved: form.peopleInvolved || null,
       knowledgeSkills: form.knowledgeSkills || null,
-      heritageDimension: form.heritageDimension || null,
+      whyCareAboutRepair: form.whyCareAboutRepair || null,
+      knowledgeTransmission: form.knowledgeTransmission || null,
       challengesAndThreats: form.challengesAndThreats || null,
       challengesPublic: form.challengesPublic,
       needs: form.needs,
@@ -297,8 +300,12 @@ export default function InitiativeEditForm({
           <textarea id="i-knowledge" value={form.knowledgeSkills} onChange={(e) => set('knowledgeSkills', e.target.value)} />
         </div>
         <div className="field">
-          <label htmlFor="i-heritage">Living heritage</label>
-          <textarea id="i-heritage" value={form.heritageDimension} onChange={(e) => set('heritageDimension', e.target.value)} />
+          <label htmlFor="i-why-care">Why they care about repair</label>
+          <textarea id="i-why-care" value={form.whyCareAboutRepair} onChange={(e) => set('whyCareAboutRepair', e.target.value)} />
+        </div>
+        <div className="field">
+          <label htmlFor="i-transmission">Knowledge transmission to future generations</label>
+          <textarea id="i-transmission" value={form.knowledgeTransmission} onChange={(e) => set('knowledgeTransmission', e.target.value)} />
         </div>
       </div>
 

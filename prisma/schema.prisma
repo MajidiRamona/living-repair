@@ -49,15 +49,16 @@ model Submission {
   // 6. Knowledge and skills
   knowledgeSkills String?
 
-  // 7. Why do you care about repair / heritage transmission (moved ahead of challenges)
-  heritageDimension String?
+  // 7. Research questions
+  challengesAndThreats       String?
+  challengesAndThreatsPublic Boolean @default(false)
 
-  // 8. Challenges and threats
-  challengesAndThreats String?
-
-  // 9. Current needs
   needs          Json?
   needsOtherText String?
+  needsPublic    Boolean @default(false)
+
+  whyCareAboutRepair    String?
+  knowledgeTransmission String?
 
   // 10. Contact — name and email are mandatory and never published, regardless of consent
   contactName String
@@ -119,9 +120,10 @@ model Initiative {
   activities       Json
   audience         Json
 
-  peopleInvolved    String?
-  knowledgeSkills   String?
-  heritageDimension String?
+  peopleInvolved String?
+  knowledgeSkills String?
+  whyCareAboutRepair    String?
+  knowledgeTransmission String?
 
   challengesAndThreats String?
   challengesPublic     Boolean @default(false)

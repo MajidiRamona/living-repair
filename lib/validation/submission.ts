@@ -71,15 +71,16 @@ export const submissionSchema = z
     // 6. Knowledge and skills
     knowledgeSkills: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
 
-    // 7. Why do you care about repair / heritage transmission
-    heritageDimension: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
-
-    // 8. Challenges and threats
+    // 7. Research questions
     challengesAndThreats: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
+    challengesAndThreatsPublic: z.boolean().default(false),
 
-    // 9. Current needs
     needs: z.array(Need).default([]),
     needsOtherText: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
+    needsPublic: z.boolean().default(false),
+
+    whyCareAboutRepair: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
+    knowledgeTransmission: z.preprocess(emptyToUndefined, maxWords(z.string().max(6000)).optional()),
 
     // 10. Contact — name and email are mandatory, never published regardless of consent
     contactName: z.string().trim().min(1).max(200),
@@ -169,7 +170,8 @@ export const initiativePatchSchema = z
     audience: z.array(Audience),
     peopleInvolved: maxWords(z.string().max(6000)).nullable(),
     knowledgeSkills: maxWords(z.string().max(6000)).nullable(),
-    heritageDimension: maxWords(z.string().max(6000)).nullable(),
+    whyCareAboutRepair: maxWords(z.string().max(6000)).nullable(),
+    knowledgeTransmission: maxWords(z.string().max(6000)).nullable(),
     challengesAndThreats: maxWords(z.string().max(6000)).nullable(),
     challengesPublic: z.boolean(),
     needs: z.array(Need),

@@ -204,12 +204,13 @@ export default async function InitiativeProfilePage({ params }: { params: Promis
                 </>
               )}
 
-              {i.heritage_dimension && (
+              {(i.why_care_about_repair || i.knowledge_transmission) && (
                 <>
                   <h3 style={{ fontFamily: 'var(--font-fraunces)', fontSize: '1.2rem', marginTop: 32, marginBottom: 12 }}>
                     Living heritage
                   </h3>
-                  <p>{i.heritage_dimension}</p>
+                  {i.why_care_about_repair && <p>{i.why_care_about_repair}</p>}
+                  {i.knowledge_transmission && <p style={{ marginTop: 12 }}>{i.knowledge_transmission}</p>}
                 </>
               )}
 

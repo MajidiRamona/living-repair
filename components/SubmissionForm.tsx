@@ -22,10 +22,13 @@ type FormState = {
   orgTypesOtherText: string;
   peopleInvolved: string;
   knowledgeSkills: string;
-  heritageDimension: string;
   challengesAndThreats: string;
+  challengesAndThreatsPublic: boolean;
   needs: string[];
   needsOtherText: string;
+  needsPublic: boolean;
+  whyCareAboutRepair: string;
+  knowledgeTransmission: string;
   contactName: string;
   email: string;
   website: string;
@@ -54,10 +57,13 @@ const INITIAL: FormState = {
   orgTypesOtherText: '',
   peopleInvolved: '',
   knowledgeSkills: '',
-  heritageDimension: '',
   challengesAndThreats: '',
+  challengesAndThreatsPublic: false,
   needs: [],
   needsOtherText: '',
+  needsPublic: false,
+  whyCareAboutRepair: '',
+  knowledgeTransmission: '',
   contactName: '',
   email: '',
   website: '',
@@ -117,8 +123,9 @@ export default function SubmissionForm() {
   const descriptionWordCount = countWords(form.description);
   const knowledgeWordCount = countWords(form.knowledgeSkills);
   const peopleWordCount = countWords(form.peopleInvolved);
-  const heritageWordCount = countWords(form.heritageDimension);
   const challengesWordCount = countWords(form.challengesAndThreats);
+  const whyCareWordCount = countWords(form.whyCareAboutRepair);
+  const transmissionWordCount = countWords(form.knowledgeTransmission);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -207,29 +214,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">2. Activities</div>
-      <div className="form-grid full" style={{ marginBottom: 32 }}>
-        <fieldset className="field">
-          <legend>Which activities does your initiative organize?</legend>
-          <CheckboxGroup name="activities" options={ACTIVITIES} selected={form.activities} onToggle={(v) => toggleIn('activities', v)} />
-          {form.activities.includes('other') && (
-            <>
-              <label htmlFor="activitiesOtherText" className="sr-only">Please specify other activity</label>
-              <input
-                id="activitiesOtherText"
-                className="other-input"
-                type="text"
-                placeholder="Please specify"
-                required
-                value={form.activitiesOtherText}
-                onChange={(e) => set('activitiesOtherText', e.target.value)}
-              />
-            </>
-          )}
-        </fieldset>
-      </div>
-
-      <div className="label">3. What do you repair, transform, or upcycle?</div>
+      <div className="label">2. What do you repair, transform, or upcycle?</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>Select all that apply</legend>
@@ -256,7 +241,7 @@ export default function SubmissionForm() {
         </fieldset>
       </div>
 
-      <div className="label">4. Who are you?</div>
+      <div className="label">3. Who are you?</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>Select all that apply</legend>
@@ -278,13 +263,35 @@ export default function SubmissionForm() {
         </fieldset>
       </div>
 
-      <div className="label">5. People</div>
+      <div className="label">4. People</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
           <label htmlFor="peopleInvolved">Describe the people involved and their roles (staff, volunteers, craftspeople, students, community members...)</label>
           <textarea id="peopleInvolved" value={form.peopleInvolved} onChange={(e) => set('peopleInvolved', e.target.value)} />
           <div className="hint">{peopleWordCount} words (max {MAX_WORDS})</div>
         </div>
+      </div>
+
+      <div className="label">5. Activities</div>
+      <div className="form-grid full" style={{ marginBottom: 32 }}>
+        <fieldset className="field">
+          <legend>Which activities does your initiative organize?</legend>
+          <CheckboxGroup name="activities" options={ACTIVITIES} selected={form.activities} onToggle={(v) => toggleIn('activities', v)} />
+          {form.activities.includes('other') && (
+            <>
+              <label htmlFor="activitiesOtherText" className="sr-only">Please specify other activity</label>
+              <input
+                id="activitiesOtherText"
+                className="other-input"
+                type="text"
+                placeholder="Please specify"
+                required
+                value={form.activitiesOtherText}
+                onChange={(e) => set('activitiesOtherText', e.target.value)}
+              />
+            </>
+          )}
+        </fieldset>
       </div>
 
       <div className="label">6. Knowledge and skills</div>
@@ -296,34 +303,30 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">7. Living heritage</div>
-      <div className="form-grid full" style={{ marginBottom: 32 }}>
+      <div className="label">7. Research questions</div>
+      <div className="form-grid full" style={{ marginBottom: 20 }}>
         <div className="field">
-          <label htmlFor="heritageDimension">
-            Why do you care about repair, and would you like repair knowledge to be transmitted through generations? Why?
-          </label>
-          <textarea id="heritageDimension" value={form.heritageDimension} onChange={(e) => set('heritageDimension', e.target.value)} />
-          <div className="hint">{heritageWordCount} words (max {MAX_WORDS})</div>
-        </div>
-      </div>
-
-      <div className="label">8. Challenges and threats</div>
-      <div className="form-grid full" style={{ marginBottom: 32 }}>
-        <div className="field">
-          <label htmlFor="challengesAndThreats">What are the main challenges your initiative faces?</label>
+          <label htmlFor="challengesAndThreats">Challenges and threats — what are the main challenges your initiative faces?</label>
           <textarea
             id="challengesAndThreats"
             value={form.challengesAndThreats}
             onChange={(e) => set('challengesAndThreats', e.target.value)}
           />
           <div className="hint">{challengesWordCount} words (max {MAX_WORDS})</div>
+          <label className="checkbox-inline" style={{ marginTop: 10 }} htmlFor="challengesAndThreatsPublic">
+            <input
+              id="challengesAndThreatsPublic"
+              type="checkbox"
+              checked={form.challengesAndThreatsPublic}
+              onChange={(e) => set('challengesAndThreatsPublic', e.target.checked)}
+            />
+            Make this information publicly visible
+          </label>
         </div>
       </div>
-
-      <div className="label">9. Current needs</div>
-      <div className="form-grid full" style={{ marginBottom: 32 }}>
+      <div className="form-grid full" style={{ marginBottom: 20 }}>
         <fieldset className="field">
-          <legend>Select all that apply</legend>
+          <legend>Current needs — select all that apply</legend>
           <CheckboxGroup name="needs" options={NEEDS} selected={form.needs} onToggle={(v) => toggleIn('needs', v)} />
           {form.needs.includes('other') && (
             <>
@@ -339,10 +342,31 @@ export default function SubmissionForm() {
               />
             </>
           )}
+          <label className="checkbox-inline" style={{ marginTop: 10 }} htmlFor="needsPublic">
+            <input
+              id="needsPublic"
+              type="checkbox"
+              checked={form.needsPublic}
+              onChange={(e) => set('needsPublic', e.target.checked)}
+            />
+            Make this information publicly visible
+          </label>
         </fieldset>
       </div>
+      <div className="form-grid full" style={{ marginBottom: 32 }}>
+        <div className="field">
+          <label htmlFor="whyCareAboutRepair">Why do you care about repair?</label>
+          <textarea id="whyCareAboutRepair" value={form.whyCareAboutRepair} onChange={(e) => set('whyCareAboutRepair', e.target.value)} />
+          <div className="hint">{whyCareWordCount} words (max {MAX_WORDS})</div>
+        </div>
+        <div className="field">
+          <label htmlFor="knowledgeTransmission">Would you like repair knowledge to be transmitted to future generations? Why?</label>
+          <textarea id="knowledgeTransmission" value={form.knowledgeTransmission} onChange={(e) => set('knowledgeTransmission', e.target.value)} />
+          <div className="hint">{transmissionWordCount} words (max {MAX_WORDS})</div>
+        </div>
+      </div>
 
-      <div className="label">10. Contact</div>
+      <div className="label">8. Contact</div>
       <div className="hint" style={{ marginTop: -14, marginBottom: 20 }}>
         Your name and email are for our records only — they are never published, whatever you choose below.
       </div>
@@ -365,7 +389,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">11. Location</div>
+      <div className="label">9. Location</div>
       <div className="form-grid" style={{ marginBottom: 12 }}>
         <div className="field">
           <label htmlFor="street">Street</label>
@@ -395,7 +419,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">12. Audience</div>
+      <div className="label">10. Audience</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>Who participates?</legend>
@@ -403,7 +427,7 @@ export default function SubmissionForm() {
         </fieldset>
       </div>
 
-      <div className="label">13. Photo (optional)</div>
+      <div className="label">11. Photo (optional)</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
           <label htmlFor="photo">A photo of your initiative, workshop, or work</label>
@@ -416,7 +440,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">14. Video (optional)</div>
+      <div className="label">12. Video (optional)</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <div className="field">
           <label htmlFor="videoUrl">Link to a video about your initiative (YouTube, Vimeo, Instagram...)</label>
@@ -431,7 +455,7 @@ export default function SubmissionForm() {
         </div>
       </div>
 
-      <div className="label">15. Publishing your information</div>
+      <div className="label">13. Publishing your information</div>
       <div className="form-grid full" style={{ marginBottom: 32 }}>
         <fieldset className="field">
           <legend>
