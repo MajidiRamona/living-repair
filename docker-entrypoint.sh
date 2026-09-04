@@ -9,5 +9,4 @@ mkdir -p "$(dirname "$db_path")"
 mkdir -p "${UPLOADS_DIR:-/data/uploads}"
 
 npx prisma migrate deploy
-node prisma/seed.mjs
 exec "$@"
